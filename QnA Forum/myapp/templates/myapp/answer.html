@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Answer Form - Q&A Forum</title>
+    <style>
+        /* CSS Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            color: #0078d4;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .question-card {
+            background-color: white;
+            border: 1px solid #e1e1e1;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .question-details {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .question-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .answer-form {
+            background-color: white;
+            border: 1px solid #e1e1e1;
+            border-radius: 4px;
+            padding: 20px;
+        }
+
+        .form-header {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-textarea {
+            width: 100%;
+            height: 250px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            resize: vertical;
+        }
+
+        .form-textarea:focus {
+            border-color: #0078d4;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 120, 212, 0.2);
+        }
+
+        .form-error {
+            color: #d9534f;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .form-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .formatting-tools {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tool-btn {
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .tool-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .submit-btn {
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .submit-btn:hover {
+            background-color: #0066b3;
+        }
+
+        .attachment-section {
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .attachment-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .attachment-icon {
+            margin-right: 8px;
+            color: #666;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-btn {
+            display: inline-block;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        .file-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        #fileName {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .guidelines {
+            background-color: #f9f9f9;
+            border: 1px solid #e1e1e1;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .guidelines h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .guidelines ul {
+            padding-left: 20px;
+        }
+
+        .guidelines li {
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        /* Django Messages */
+        .messages {
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .messages li {
+            list-style: none;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .messages .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .messages .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .form-controls {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .formatting-tools {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="{% url 'forum:question_list' %}" class="logo">Q&A Forum</a>
+            <a href="javascript:history.back()">Back to Questions</a>
+        </div>
+
+        <div class="question-card">
+            <h1 class="question-title">{{ question.title }}</h1>
+            <div class="question-details">
+                {{ question.content }}
+            </div>
+            <div class="question-meta">
+                <span>Asked by {% if question.author %}{{ question.author.username }}{% else %}Anonymous{% endif %}</span>
+                <span>{{ question.created_at|date:"M d, Y" }}</span>
+            </div>
+        </div>
+
+        <div class="answer-form">
+            <h2 class="form-header">Your Answer</h2>
+
+            <form id="answerForm" action="{% url 'forum:submit_answer' question.id %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="answerContent" class="form-label">Write your answer</label>
+                    <textarea id="answerContent" name="content" class="form-textarea" placeholder="Provide your answer here. Use Markdown for formatting. Be clear and concise.">{{ form.content.value|default_if_none:"" }}</textarea>
+                    {% if form.content.errors %}
+                        <div class="form-error">{{ form.content.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-controls">
+                    <div class="formatting-tools">
+                        <button type="button" class="tool-btn" onclick="formatText('bold')">Bold</button>
+                        <button type="button" class="tool-btn" onclick="formatText('italic')">Italic</button>
+                        <button type="button" class="tool-btn" onclick="formatText('code')">Code</button>
+                        <button type="button" class="tool-btn" onclick="formatText('link')">Link</button>
+                        <button type="button" class="tool-btn" onclick="formatText('list')">List</button>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Post Your Answer</button>
+                </div>
+
+                <div class="attachment-section">
+                    <div class="attachment-label">
+                        <span class="attachment-icon">📎</span>
+                        <span>Add supporting files (optional)</span>
+                    </div>
+
+                    <label for="fileAttachment" class="file-btn">Choose File</label>
+                    <input type="file" id="fileAttachment" name="attachment" class="file-input">
+                    <span id="fileName">No file chosen</span>
+                </div>
+            </form>
+        </div>
+
+        <div class="guidelines">
+            <h3>Answer Guidelines</h3>
+            <ul>
+                <li>Provide detailed explanations with examples when possible</li>
+                <li>Use appropriate formatting for code, equations, or important concepts</li>
+                <li>Cite sources if you're referencing external material</li>
+                <li>Be respectful and constructive, even if correcting misconceptions</li>
+                <li>Focus on answering the specific question asked</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript Functions
+        function formatText(type) {
+            const textarea = document.getElementById('answerContent');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            let formattedText = '';
+
+            switch(type) {
+                case 'bold':
+                    formattedText = `**${selectedText}**`;
+                    break;
+                case 'italic':
+                    formattedText = `*${selectedText}*`;
+                    break;
+                case 'code':
+                    formattedText = `\`${selectedText}\``;
+                    break;
+                case 'link':
+                    formattedText = `[${selectedText}](url)`;
+                    break;
+                case 'list':
+                    formattedText = `\n- ${selectedText}`;
+                    break;
+            }
+
+            textarea.value =
+                textarea.value.substring(0, start) +
+                formattedText +
+                textarea.value.substring(end);
+
+            textarea.focus();
+            textarea.selectionStart = start + formattedText.length;
+            textarea.selectionEnd = start + formattedText.length;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // File upload handling
+            const fileInput = document.getElementById('fileAttachment');
+            const fileNameDisplay = document.getElementById('fileName');
+
+            if (fileInput && fileNameDisplay) {
+                fileInput.addEventListener('change', function(e) {
+                    if (e.target.files.length > 0) {
+                        const fileName = e.target.files[0].name;
+                        fileNameDisplay.textContent = fileName;
+                    } else {
+                        fileNameDisplay.textContent = 'No file chosen';
+                    }
+                });
+            }
+
+            // Form submission (in case we want to handle it via AJAX in the future)
+            const answerForm = document.getElementById('answerForm');
+            if (answerForm) {
+                answerForm.addEventListener('submit', function(e) {
+                    // We'll let Django handle the form submission for now
+                    // This is where you could add AJAX form submission if needed
+                });
+            }
+        });
+    </script>
+</body>
+</html>

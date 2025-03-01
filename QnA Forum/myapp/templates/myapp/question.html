@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask a Question</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-hover: #3a56d4;
+            --text-color: #333;
+            --light-text: #6c757d;
+            --bg-color: #f8f9fa;
+            --border-color: #dee2e6;
+            --error-color: #e63946;
+            --warning-color: #ff9f1c;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-weight: 600;
+            font-size: 28px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+        
+        .form-label span {
+            color: var(--error-color);
+        }
+        
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+        
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .character-count {
+            font-size: 14px;
+            color: var(--light-text);
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .character-count.warning {
+            color: var(--warning-color);
+        }
+        
+        .character-count.error {
+            color: var(--error-color);
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+        
+        .submit-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .submit-btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        .error-message {
+            color: var(--error-color);
+            background-color: rgba(230, 57, 70, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2><i class="fas fa-question-circle"></i> Ask a Question</h2>
+        
+        <div id="error-message" class="error-message"></div>
+        
+        <form id="question-form" method="POST" action="{% url 'ask_question' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">Title <span>*</span></label>
+                <input type="text" name="title" id="title" class="form-input" required maxlength="150" placeholder="Be specific and clear">
+                <div class="character-count" id="title-count">0/150 characters</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Problem Description <span>*</span></label>
+                <textarea name="content" id="content" class="form-textarea" required minlength="30" placeholder="Describe your problem in detail..."></textarea>
+                <div class="character-count" id="content-count">0/1000 characters minimum (30)</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Expected Outcome <span>*</span></label>
+                <textarea name="expected_outcome" id="expected_outcome" class="form-textarea" required placeholder="What results are you hoping for?"></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i> Post Your Question
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        $(document).ready(function () {
+            // ✅ Character count for title
+            $("#title").on("input", function () {
+                const currentLength = $(this).val().length;
+                const maxLength = $(this).attr("maxlength");
+                $("#title-count").text(`${currentLength}/${maxLength} characters`);
+    
+                if (currentLength > maxLength * 0.8) {
+                    $("#title-count").addClass("warning");
+                } else {
+                    $("#title-count").removeClass("warning");
+                }
+            });
+    
+            // ✅ Character count for content
+            $("#content").on("input", function () {
+                const currentLength = $(this).val().length;
+                const minLength = $(this).attr("minlength");
+                $("#content-count").text(`${currentLength}/1000 characters minimum (${minLength})`);
+    
+                if (currentLength < minLength) {
+                    $("#content-count").addClass("error");
+                } else {
+                    $("#content-count").removeClass("error");
+                }
+            });
+    
+            // ✅ Form submission with Django moderation backend
+            $("#question-form").on("submit", function (event) {
+                event.preventDefault(); // Stop normal form submission
+    
+                const form = $(this);
+                const formData = form.serialize();
+    
+                // Show loading spinner
+                const submitBtn = $(".submit-btn");
+                submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Checking...');
+                submitBtn.prop("disabled", true);
+    
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'ask_question' %}",
+                    data: formData,
+                    success: function (response) {
+                        if (response.status === "error") {
+                            $("#error-message").text(response.message);
+                            $("#error-message").css("display", "block");
+                            submitBtn.html('<i class="fas fa-paper-plane"></i> Post Your Question');
+                            submitBtn.prop("disabled", false);
+                        } else {
+                            window.location.href = "{% url 'index' %}"; // ✅ Redirect on success
+                        }
+                    },
+                    error: function () {
+                        alert("❌ Error: Could not check content moderation. Try again.");
+                        submitBtn.html('<i class="fas fa-paper-plane"></i> Post Your Question');
+                        submitBtn.prop("disabled", false);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

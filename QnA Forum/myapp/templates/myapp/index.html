@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q&A Forum</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        body {
+            background-color: #f6f6f6;
+            color: #242729;
+            font-size: 16px; /* Increased base font size for readability */
+            line-height: 1.6; /* Adjusted line height for improved readability */
+        }
+        
+        .header {
+            background: #ffffff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo {
+            font-size: 28px; /* Slightly increased for better prominence */
+            font-weight: 600;
+            color: #0077cc;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif; /* Elegant, modern font */
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 10px 35px 10px 15px; /* Increased padding for better appearance */
+            border: 1px solid #babfc4;
+            border-radius: 5px;
+            font-size: 15px; /* Increased font size for better legibility */
+        }
+        
+        .search-bar i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #838c95;
+        }
+        
+        .ask-question-btn {
+            background: #0095ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px; /* Rounded edges for modern look */
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px; /* Slight increase for clarity */
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 100px auto 20px; /* Increased margin for spacing from header */
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 24px;
+        }
+        
+        .questions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .questions-title {
+            font-size: 30px; /* Increased size for more prominence */
+            font-weight: 600;
+            color: #242729;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .sort-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .sort-btn {
+            padding: 10px 20px;
+            border: 1px solid #babfc4;
+            background: white;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .sort-btn.active {
+            background: #e4e6e8;
+            color: #3b4045;
+        }
+        
+        .question-card {
+            background: white;
+            border: 1px solid #e3e6e8;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        
+        .stats {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-width: 90px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 22px;
+            color: #3b4045;
+            font-weight: 600;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #6a737c;
+        }
+        
+        .question-content {
+            flex: 1;
+        }
+        
+        .question-title {
+            font-size: 19px; /* Slightly increased font size */
+            color: #0077cc;
+            text-decoration: none;
+            margin-bottom: 10px;
+            font-weight: 500;
+            display: block;
+        }
+        
+        .question-excerpt {
+            font-size: 15px; /* Increased font size */
+            color: #3b4045;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            background: #e1ecf4;
+            color: #39739d;
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-size: 13px;
+            text-decoration: none;
+        }
+        
+        .question-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #6a737c;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .user-avatar {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #e1ecf4;
+        }
+        
+        .sidebar {
+            position: sticky;
+            top: 100px; /* Adjusted for better alignment with header */
+        }
+        
+        .sidebar-card {
+            background: white;
+            border: 1px solid #e3e6e8;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+        
+        .sidebar-header {
+            background: #f8f9f9;
+            padding: 16px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border-bottom: 1px solid #e3e6e8;
+        }
+        
+        .sidebar-content {
+            padding: 20px;
+        }
+        
+        .stats-list {
+            list-style: none;
+        }
+        
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e3e6e8;
+        }
+        
+        .stats-item:last-child {
+            border-bottom: none;
+        }
+        
+        .tips-list {
+            list-style: none;
+        }
+        
+        .tips-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #e3e6e8;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .tips-item:last-child {
+            border-bottom: none;
+        }
+        
+        .tips-item i {
+            color: #0077cc;
+            margin-top: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 12px;
+            }
+        
+            .sidebar {
+                display: none;
+            }
+        
+            .search-bar {
+                display: none;
+            }
+        
+            .stats {
+                min-width: 70px;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo">Q&A Forum</a>
+            <div class="search-bar">
+                <input type="text" placeholder="Search questions...">
+                <i class="fas fa-search"></i>
+            </div>
+            <button onclick="location.href='{% url 'ask_question' %}'">Ask a Question</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <main>
+            <div class="questions-header">
+                <h1 class="questions-title">All Questions</h1>
+                <div class="sort-options">
+                    <button class="sort-btn active">Newest</button>
+                    <button class="sort-btn">Active</button>
+                    <button class="sort-btn">Most Answered</button>
+                </div>
+            </div>
+        
+            {% if questions %}
+                {% for question in questions %}
+                <div class="question-card">
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-number">{{ question.total_votes }}</span>
+                            <span class="stat-label">votes</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ question.total_answers }}</span>
+                            <span class="stat-label">answers</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ question.total_views }}</span>
+                            <span class="stat-label">views</span>
+                        </div>
+                    </div>
+                    <div class="question-content">
+                        <a href="{% url 'question_detail' question.id %}" class="question-title">{{ question.title }}</a>
+                        <p class="question-excerpt">{{ question.description|truncatewords:20 }}</p>
+                        <div class="tags">
+                            {% for tag in question.tag_list %}
+                            <span class="tag">{{ tag }}</span>
+                        {% endfor %}
+                        
+                        </div>
+                        <div class="question-meta">
+                            <span>Asked by {{ question.user.username }}</span>
+                            <span>{{ question.created_at|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-questions" style="text-align: center; padding: 40px; color: #6a737c;">
+                    No questions available yet. Be the first to ask!
+                </div>
+            {% endif %}
+        </main>
+        
+
+        <aside class="sidebar">
+            <div class="sidebar-card">
+                <div class="sidebar-header">
+                    Statistics
+                </div>
+                <div class="sidebar-content">
+                    <ul class="stats-list">
+                        <li class="stats-item">
+                            <span>Total Questions</span>
+                            <strong>0</strong>
+                        </li>
+                        <li class="stats-item">
+                            <span>Total Answers</span>
+                            <strong>0</strong>
+                        </li>
+                        <li class="stats-item">
+                            <span>Questions Solved</span>
+                            <strong>0</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            {% if messages %}
+    {% for message in messages %}
+        <script>
+            alert("{{ message }}");  // Show a popup alert
+        </script>
+    {% endfor %}
+{% endif %}
+
+
+            <div class="sidebar-card">
+                <div class="sidebar-header">
+                    Asking Tips
+                </div>
+                <div class="sidebar-content">
+                    <ul class="tips-list">
+                        <li class="tips-item">
+                            <i class="fas fa-check"></i>
+                            <span>Be specific about your problem</span>
+                        </li>
+                        <li class="tips-item">
+                            <i class="fas fa-check"></i>
+                            <span>Include relevant code examples</span>
+                        </li>
+                        <li class="tips-item">
+                            <i class="fas fa-check"></i>
+                            <span>Describe what you've tried</span>
+                        </li>
+                        <li class="tips-item">
+                            <i class="fas fa-check"></i>
+                            <span>Use appropriate tags</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+    </div>
+</body>
+</html>
+<script>
+    setTimeout(function() {
+        window.location.href = "{% url 'index' %}";  // Redirect after 2 seconds
+    }, 2000);
+</script>
